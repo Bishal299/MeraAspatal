@@ -94,7 +94,7 @@ const LandingPage = () => {
             }}
           >
             <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: '800px', padding: '2rem' }}>
-              <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/07/National_Health_Mission_Logo.svg/1200px-National_Health_Mission_Logo.svg.png" alt="NHM" style={{ height: '80px', marginBottom: '2rem', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.5))' }} />
+
               <h1 className="animate-fade-in" style={{ color: 'white', fontSize: '3.5rem', marginBottom: '1.5rem', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
                 {slides[currentSlide].title}
               </h1>
@@ -168,7 +168,7 @@ const LandingPage = () => {
             <div style={{ width: '80px', height: '4px', backgroundColor: 'var(--secondary)', margin: '0 auto' }}></div>
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem' }}>
+          <div className="features-grid">
             
             <div className="card" style={{ padding: '2.5rem', transition: 'all 0.3s ease' }}>
               <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>

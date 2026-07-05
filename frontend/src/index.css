@@ -213,3 +213,16 @@ h3 { font-size: 1.5rem; }
 .nav-link.active {
   color: var(--accent);
 }
+
+/* Features Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
