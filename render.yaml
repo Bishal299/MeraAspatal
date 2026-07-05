@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: meraaspatal-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false # You will provide this securely in the Render Dashboard
