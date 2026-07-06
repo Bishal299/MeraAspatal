@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Bed, AlertCircle, Bot, TrendingDown, Users, Loader, TestTube } from 'lucide-react';
 import { db } from '../firebase';
-import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { getDemoInventory, saveDemoData } from '../demoData';
 
 const StaffDashboard = () => {
   const [activeTab, setActiveTab] = useState('inventory');
@@ -9,7 +10,11 @@ const StaffDashboard = () => {
   const [inventory, setInventory] = useState([]);
   
   useEffect(() => {
-    // Listen to real-time inventory updates from Firestore
+    if (!db) {
+      setInventory(getDemoInventory());
+      return undefined;
+    }
+
     const unsubscribe = onSnapshot(collection(db, 'inventory'), (snapshot) => {
       const invData = [];
       snapshot.forEach(doc => {

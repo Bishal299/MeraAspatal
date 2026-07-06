@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, MapPin, PhoneCall, BedDouble, Stethoscope } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
+import { getDemoFacilities } from '../demoData';
 
 const PatientDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,6 +10,11 @@ const PatientDashboard = () => {
   const [facilities, setFacilities] = useState([]);
 
   useEffect(() => {
+    if (!db) {
+      setFacilities(getDemoFacilities());
+      return undefined;
+    }
+
     const unsubscribe = onSnapshot(collection(db, 'facilities'), (snapshot) => {
       const facData = [];
       snapshot.forEach(doc => {

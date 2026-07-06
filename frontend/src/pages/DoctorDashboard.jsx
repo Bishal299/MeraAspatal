@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { UserPlus, Clock, CheckCircle, FileText, Fingerprint } from 'lucide-react';
 import { db } from '../firebase';
-import { collection, onSnapshot, doc, updateDoc, getDoc, increment } from 'firebase/firestore';
+import { collection, onSnapshot, doc, updateDoc, increment } from 'firebase/firestore';
+import { getDemoPatients, saveDemoData, getDemoFacilities } from '../demoData';
 
 const DoctorDashboard = () => {
   const [patients, setPatients] = useState([]);
 
   useEffect(() => {
+    if (!db) {
+      const demoPatients = getDemoPatients();
+      demoPatients.sort((a, b) => {
+        const order = { 'in-progress': 0, 'waiting': 1, 'completed': 2 };
+        return order[a.status] - order[b.status];
+      });
+      setPatients(demoPatients);
+      return undefined;
+    }
+
     const unsubscribe = onSnapshot(collection(db, 'patients'), (snapshot) => {
       const patData = [];
       snapshot.forEach(d => {
         patData.push({ id: d.id, ...d.data() });
       });
-      // Sort by status ('in-progress', 'waiting', 'completed') and time
       patData.sort((a, b) => {
         const order = { 'in-progress': 0, 'waiting': 1, 'completed': 2 };
         return order[a.status] - order[b.status];
@@ -26,6 +36,15 @@ const DoctorDashboard = () => {
   }, []);
 
   const updateStatus = async (id, newStatus) => {
+    if (!db) {
+      const updatedPatients = patients.map((patient) =>
+        patient.id === id ? { ...patient, status: newStatus } : patient
+      );
+      setPatients(updatedPatients);
+      saveDemoData({ patients: updatedPatients });
+      return;
+    }
+
     try {
       const patientRef = doc(db, 'patients', id);
       await updateDoc(patientRef, { status: newStatus });
@@ -37,8 +56,19 @@ const DoctorDashboard = () => {
   const [onDuty, setOnDuty] = useState(false);
 
   const toggleDuty = async () => {
+    if (!db) {
+      const updatedFacilities = getDemoFacilities().map((facility) =>
+        facility.id === 'FAC_1'
+          ? { ...facility, doctors: Math.max(0, facility.doctors + (onDuty ? -1 : 1)) }
+          : facility
+      );
+      saveDemoData({ facilities: updatedFacilities });
+      setOnDuty(!onDuty);
+      return;
+    }
+
     try {
-      const facRef = doc(db, 'facilities', 'FAC_1'); // Hardcoded to PHC Kantabada for demo
+      const facRef = doc(db, 'facilities', 'FAC_1');
       await updateDoc(facRef, {
         doctors: increment(onDuty ? -1 : 1)
       });
