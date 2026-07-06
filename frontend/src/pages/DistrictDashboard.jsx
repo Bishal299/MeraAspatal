@@ -2,11 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { AlertTriangle, TrendingUp, Building2, Activity, Map } from 'lucide-react';
+import { getDemoFacilities } from '../demoData';
 
 const DistrictDashboard = () => {
   const [facilities, setFacilities] = useState([]);
 
   useEffect(() => {
+    if (!db) {
+      setFacilities(getDemoFacilities());
+      return undefined;
+    }
+
     const unsubscribe = onSnapshot(collection(db, 'facilities'), (snapshot) => {
       const facData = [];
       snapshot.forEach(doc => {
