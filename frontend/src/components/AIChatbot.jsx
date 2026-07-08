@@ -17,6 +17,22 @@ const AIChatbot = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const getWelcomeMessage = (lang) => {
+    if (lang === 'hi') {
+      return 'नमस्कार! मैं आपका मेराअस्पताल एआई सहायक हूँ। मुझसे जिले में दवाओं के स्टॉक, मरीजों की प्रतीक्षा समय, सक्रिय डॉक्टरों या बेड की उपलब्धता के बारे में कुछ भी पूछें!';
+    } else if (lang === 'or') {
+      return 'ନମସ୍କାର! ମୁଁ ଆପଣଙ୍କର ମେରାଅସ୍ପିଟାଲ୍ ଏଆଇ ସହାୟକ | ଜିଲ୍ଲାରେ ଔଷଧ ଷ୍ଟକ୍, ରୋଗୀ ଅପେକ୍ଷା ସମୟ, ସକ୍ରିୟ ଡାକ୍ତର କିମ୍ବା ବେଡ୍ ଉପଲବ୍ଧତା ବିଷୟରେ ମୋତେ କିଛି ବି ପଚାରନ୍ତୁ!';
+    } else {
+      return 'Namaskar! I am your MeraAsptal AI Assistant. Ask me anything about medicine stocks, patient wait times, active doctors, or bed availability in our district!';
+    }
+  };
+
+  useEffect(() => {
+    if (messages.length === 1 && messages[0].sender === 'bot') {
+      setMessages([{ sender: 'bot', text: getWelcomeMessage(language) }]);
+    }
+  }, [language]);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);

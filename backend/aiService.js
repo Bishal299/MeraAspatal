@@ -28,6 +28,26 @@ const handleLocalFallback = (message, context, language = 'en') => {
   const isHindi = language === 'hi';
   const isOdia = language === 'or';
 
+  // 0. Generic stock lookup check
+  if (query.includes('medicine') || query.includes('stock') || query.includes('dawa') || query.includes('दवा') || query.includes('ଔଷଧ') || query.includes('ସାମଗ୍ରୀ')) {
+    if (context && context.inventory) {
+      let totals = {};
+      context.inventory.forEach(item => {
+        const name = item.item_name;
+        totals[name] = (totals[name] || 0) + item.stock;
+      });
+      let list = Object.entries(totals).map(([name, stock]) => `${name}: ${stock} units`).join(', ');
+      
+      if (isHindi) {
+        return `जिले में दवाओं की कुल उपलब्धता इस प्रकार है: ${list}।`;
+      } else if (isOdia) {
+        return `ସମଗ୍ର ଜିଲ୍ଲାରେ ଔଷଧର ମୋଟ ଉପଲବ୍ଧତା ହେଉଛି: ${list} |`;
+      } else {
+        return `Total medicine stocks across the district: ${list}.`;
+      }
+    }
+  }
+
   // 1. Medicine stock checking (e.g. Paracetamol, ORS, Amoxicillin)
   let matchedItem = null;
   if (context && context.inventory) {
