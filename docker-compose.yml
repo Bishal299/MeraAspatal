@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - GEMINI_API_KEY=AIzaSyAFnKGCmCum7F44yGcD4zFQ9KHuDiHuM1U
+      - JWT_SECRET=meraaspatal_secret_key_123
+    volumes:
+      - backend-data:/app/database
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+
+volumes:
+  backend-data:

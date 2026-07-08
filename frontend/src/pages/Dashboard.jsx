@@ -22,7 +22,7 @@ const Dashboard = () => {
   if (!role) return <div>Loading...</div>;
 
   return (
-    <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh', position: 'relative' }}>
       <Navbar />
       <div className="container" style={{ padding: '2rem 0' }}>
         {role === 'staff' && <StaffDashboard />}

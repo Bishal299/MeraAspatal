@@ -5,3 +5,7 @@ node_modules/
 *.local
 !.env.example
 !**/.env.example
+*.db
+*.db-journal
+*.sqlite
+*.log
