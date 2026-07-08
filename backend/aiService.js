@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const db = require('./db');
 
-const getApiKey = () => process.env.GEMINI_API_KEY || 'AIzaSyAFnKGCmCum7F44yGcD4zFQ9KHuDiHuM1U';
+const getApiKey = () => process.env.GEMINI_API_KEY;
 
 const getSystemTelemetryContext = async () => {
   try {
@@ -37,7 +37,7 @@ const handleLocalFallback = (message, context, language = 'en') => {
         totals[name] = (totals[name] || 0) + item.stock;
       });
       let list = Object.entries(totals).map(([name, stock]) => `${name}: ${stock} units`).join(', ');
-      
+
       if (isHindi) {
         return `जिले में दवाओं की कुल उपलब्धता इस प्रकार है: ${list}।`;
       } else if (isOdia) {
@@ -64,11 +64,11 @@ const handleLocalFallback = (message, context, language = 'en') => {
 
   if (matchedItem) {
     // Sum stock across all clinics for this medicine name
-    const allMatches = context.inventory.filter(item => 
+    const allMatches = context.inventory.filter(item =>
       item.item_name.toLowerCase().includes(matchedItem.item_name.toLowerCase())
     );
     const totalStock = allMatches.reduce((sum, item) => sum + item.stock, 0);
-    
+
     // Get clinics detail list
     let clinicBreakdown = allMatches.map(item => {
       const facility = context.facilities.find(f => f.id === item.facility_id);
@@ -146,7 +146,7 @@ const handleLocalFallback = (message, context, language = 'en') => {
 const generateChatResponse = async (message, language = 'en') => {
   const apiKey = getApiKey();
   const context = await getSystemTelemetryContext();
-  
+
   if (!apiKey || apiKey.startsWith('your_') || apiKey.startsWith('AIzaSyAFnKGCmCum7F44yGcD4zFQ9KHuDiHuM1U')) {
     return handleLocalFallback(message, context, language);
   }
@@ -183,7 +183,7 @@ const generateChatResponse = async (message, language = 'en') => {
 const generateForecast = async (facilityId) => {
   try {
     // 1. Fetch current inventory levels
-    const sql = facilityId 
+    const sql = facilityId
       ? "SELECT i.*, f.name as facility_name FROM inventory i JOIN facilities f ON i.facility_id = f.id WHERE i.facility_id = ?"
       : "SELECT i.*, f.name as facility_name FROM inventory i JOIN facilities f ON i.facility_id = f.id";
     const params = facilityId ? [facilityId] : [];
@@ -196,11 +196,11 @@ const generateForecast = async (facilityId) => {
       // Mock average consumption rate per day
       let dailyUsage = Math.round(item.threshold / 15); // assume threshold covers 15 days
       if (dailyUsage <= 0) dailyUsage = 2;
-      
+
       const daysRemaining = Math.max(0, Math.floor(item.stock / dailyUsage));
       const projectedNextMonthDemand = dailyUsage * 30;
       const shortageRisk = item.stock < item.threshold ? 'High' : (item.stock < item.threshold * 1.5 ? 'Medium' : 'Low');
-      
+
       // Predict stock-out date
       const stockOutDate = new Date();
       stockOutDate.setDate(stockOutDate.getDate() + daysRemaining);
@@ -232,7 +232,7 @@ const generateRedistribution = async () => {
   try {
     // Reallocate stock from facilities having excess to those running critical
     const allInventory = await db.query("SELECT i.*, f.name as facility_name FROM inventory i JOIN facilities f ON i.facility_id = f.id");
-    
+
     // Group inventory by item name
     const itemsByName = {};
     allInventory.forEach(item => {
@@ -247,7 +247,7 @@ const generateRedistribution = async () => {
     // Analyze each item for potential redistributions
     Object.keys(itemsByName).forEach(itemName => {
       const clinics = itemsByName[itemName];
-      
+
       // Find critical/low clinics
       const shortages = clinics.filter(c => c.stock < c.threshold);
       // Find surplus clinics
@@ -287,7 +287,7 @@ const generateCenterScores = async () => {
     const facilities = await db.query("SELECT * FROM facilities");
     const inventory = await db.query("SELECT * FROM inventory");
     const patients = await db.query("SELECT * FROM appointments WHERE status = 'waiting'");
-    
+
     // Group variables by facility
     const scores = [];
 

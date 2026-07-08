@@ -19,7 +19,6 @@ import {
   User,
   Phone,
 } from "lucide-react";
-import { seedDatabase } from "../seed";
 import "../styles/login.css";
 
 import { api } from "../utils/api";
